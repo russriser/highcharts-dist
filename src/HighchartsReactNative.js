@@ -18,12 +18,35 @@ let httpProto = 'http://';
 
 export default function HighchartsReactNative(props) {
   let { height, width } = useWindowDimensions();
+
   if (!!props.styles) {
     const userStyles = StyleSheet.flatten(props.styles);
     const { width: w, height: h } = userStyles;
     width = w;
     height = h;
   }
+
+  const useCDN = props.useCDN || false;
+  const modules = props.modules || [];
+  const setOptions = props.setOptions || {};
+
+  const [hcModulesReady, setHcModulesReady] = React.useState(false);
+  const [layoutHTML, setLayoutHTML] = React.useState(null);
+  const [renderedOnce, setRenderedOnce] = React.useState(false);
+
+  const webviewRef = React.useRef(null);
+
+  if (props.useSSL) {
+    httpProto = 'https://';
+  }
+
+  if (typeof props.useCDN === 'string') {
+    cdnPath = props.useCDN;
+  }
+
+  useEffect(() => {
+    setHcAssets(useCDN);
+  }, []);
 
   //   static getDerivedStateFromProps(props, state) {
   //     let width = Dimensions.get('window').width;
@@ -156,31 +179,6 @@ export default function HighchartsReactNative(props) {
   //     });
   //   };
 
-  if (props.useSSL) {
-    httpProto = 'https://';
-  }
-
-  if (typeof props.useCDN === 'string') {
-    cdnPath = props.useCDN;
-  }
-
-  // extract width and height from user styles
-  const userStyles = StyleSheet.flatten(props.styles);
-
-  const useCDN = props.useCDN || false;
-  const modules = props.modules || [];
-  const setOptions = props.setOptions || {};
-
-  const [hcModulesReady, setHcModulesReady] = React.useState(false);
-  const [layoutHTML, setLayoutHTML] = React.useState(null);
-  const [renderedOnce, setRenderedOnce] = React.useState(false);
-
-  const webviewRef = React.useRef(null);
-
-  useEffect(() => {
-    setHcAssets(useCDN);
-  }, []);
-
   //   constructor(props) {
   //     super(props);
 
@@ -209,8 +207,6 @@ export default function HighchartsReactNative(props) {
 
   //     this.setHcAssets(this.state.useCDN);
   //   }
-
-  webviewRef.current.postMessage(serialize(props.options), true);
 
   //   componentDidUpdate() {
   //     this.webviewRef &&
@@ -331,6 +327,7 @@ export default function HighchartsReactNative(props) {
                 }, false);
             `;
 
+    webviewRef.current.postMessage(serialize(props.options), true);
     // Create container for the chart
     return (
       <View style={[props.styles, { width, height }]}>
