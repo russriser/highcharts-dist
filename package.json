@@ -9,8 +9,8 @@
   "dependencies": {
     "expo": "^45.0.0",
     "metro-config": "^0.60.0",
-    "expo-asset": "~8.4.3",
-    "expo-file-system": "~13.0.3"
+    "expo-asset": "~8.5.0",
+    "expo-file-system": "~14.0.0"
   },
   "keywords": [
     "highcharts",
